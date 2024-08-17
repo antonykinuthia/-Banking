@@ -1,0 +1,13 @@
+{
+	"folders": [
+		{
+			"name": "assets",
+			"path": "../../assets"
+		},
+		{
+			"name": "new_banking",
+			"path": "."
+		}
+	],
+	"settings": {}
+}
