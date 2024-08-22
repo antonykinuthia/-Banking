@@ -7,19 +7,14 @@ import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { Button } from "@/components/ui/button"
-import {Form,
-    FormControl,
-    FormDescription,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage,} from "@/components/ui/form"
+import {Form,} from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import CustomInput from './CustomInput'
-import { AuhtformSchema } from '@/lib/utils'
+import { authFormSchema } from '@/lib/utils'
 import { Loader2, } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { getLoggedInUser, signIn, signUp } from '@/lib/actions/user.actions'
+import PlaidLinks from './PlaidLinks'
 
 
 
@@ -29,7 +24,7 @@ const router = useRouter();
 const [user, setUser] = useState(null)
 const [isLoading, setIsLoading] = useState(false);
 // const loggedInUser = await getLoggedInUser();
-const formSchema = AuhtformSchema(type);
+const formSchema = authFormSchema(type);
 
 const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -42,8 +37,23 @@ const form = useForm<z.infer<typeof formSchema>>({
   const onSubmit = async(data: z.infer<typeof formSchema>) => {
     setIsLoading(true);
     try {
+
       if(type === 'sign-up'){
-        const newUser = await signUp(data);
+        const userData = {
+          firstName: data.firstName!,
+          lastName: data.lastName!,
+          state: data.state!,
+          postalCode: data.postalCode!,
+          city: data.city!,
+          address1: data.address1!,
+          dateOfBirth: data.dateOfBirth!,
+          ssn: data.ssn!,
+
+          email: data.email,
+          password: data.password
+        }
+
+        const newUser = await signUp(userData);
 
         setUser(newUser)
         
@@ -90,7 +100,7 @@ const form = useForm<z.infer<typeof formSchema>>({
         </header>
         {user? (
             <div className='flex flex-col gap-4'>
-
+               <PlaidLinks user={user} variant='primary'/>
             </div>
         ) : (
             <>
@@ -105,12 +115,16 @@ const form = useForm<z.infer<typeof formSchema>>({
 
                 <div className='flex gap-4'>
                 <CustomInput control={form.control} name='address1' label='Address' placeholder='Enter Your address'/>
-                <CustomInput control={form.control} name='county' label='County' placeholder='Ex: Kiambu'/>
+                <CustomInput control={form.control} name='city' label='City' placeholder='Ex: Kiambu'/>
                 </div>
-                
+
+                <div className='flex gap-4'>
+                <CustomInput control={form.control} name='state' label='State' placeholder='Enter Your state'/>
+                <CustomInput control={form.control} name='postalCode' label='postalCode' placeholder='Enter your Postal code'/>
+                </div>
                 <div className='flex gap-4'>
                 <CustomInput control={form.control} name='dateOfBirth' label='Date Of Birth' placeholder='YYYY-MM-DD'/>
-                <CustomInput control={form.control} name='idNumber' label='Id Number' placeholder='Enter your id number'/>
+                <CustomInput control={form.control} name='ssn' label='Ssn' placeholder='Enter your ssn'/>
                 </div>
 
                 </>
